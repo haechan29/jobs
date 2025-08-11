@@ -8,7 +8,7 @@ import FilterItem from './components/FilterItem';
 import { JobPosting } from './domain/jobPosting/JobPosting';
 import SortOptionItem from './components/SortOptionItem';
 import useLocalStorageState from './hooks/useLocalStorageState';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 
 function sortJobPosting(
   key: string,
@@ -20,8 +20,8 @@ function sortJobPosting(
       return j1.deadline.compareTo(j2.deadline);
     }
     case 'experienceLevel': {
-      const min1 = j1.experienceLevel.min ?? j1.experienceLevel.max!!
-      const min2 = j2.experienceLevel.min ?? j2.experienceLevel.max!!
+      const min1 = j1.experienceLevel.min ?? 0;
+      const min2 = j2.experienceLevel.min ?? 0;
       return min1 - min2;
     }
     default: {
