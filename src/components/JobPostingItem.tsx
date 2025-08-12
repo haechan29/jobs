@@ -57,8 +57,11 @@ const JobPostingItem: React.FC<JobPostingItemProps> = ({
       <div className='flex gap-10'>
         <div className='flex flex-1 flex-col text-sm mb-3'>
           <div className='text-gray-500 mb-2'>자격요건 ({checkedRequirements.length}/{requirements.length})</div>
-          {requirements.map((requirement) => (
-            <div className='flex gap-2 mb-1'>
+          {requirements.map((requirement, idx) => (
+            <div
+              className='flex gap-2 mb-1'
+              key={`${requirement}-${idx}`}
+            >
               <input
                 type='checkbox'
                 className='w-4 h-4 accent-blue-600 rounded-sm cursor-pointer mr-1 mt-0.5'
@@ -79,8 +82,11 @@ const JobPostingItem: React.FC<JobPostingItemProps> = ({
 
         <div className='flex flex-1 flex-col text-sm mb-3'>
           <div className='text-gray-500 mb-2'>우대사항 ({checkedPreferences.length}/{preferences.length})</div>
-          {preferences.map((preference) => (
-            <div className='flex gap-2 mb-1'>
+          {preferences.map((preference, idx) => (
+            <div
+              className='flex gap-2 mb-1'
+              key={`${preference}-${idx}`}
+            >
               <input
                 type='checkbox'
                 className='w-4 h-4 accent-blue-600 rounded-sm cursor-pointer mr-1 mt-0.5'
