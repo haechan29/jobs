@@ -1,17 +1,19 @@
-export type Filter = 
-  | {
-    key: 'platform';
-    label: string;
-    type: 'multiSelect'
-    options: string[];
-  }
-  | {
-    key: 'experienceLevel';
-    label: string;
-    type: 'range';
-    min: number;
-    max: number;
-  };
+export type PlatformFilter = {
+  key: 'platform';
+  label: string;
+  type: 'multiSelect'
+  options: string[];
+};
+
+export type ExperienceLevelFilter = {
+  key: 'experienceLevel';
+  label: string;
+  type: 'range';
+  min: number;
+  max: number;
+};
+
+export type Filter = PlatformFilter | ExperienceLevelFilter;
 
 export const filters: Filter[] = [
   {
@@ -19,10 +21,8 @@ export const filters: Filter[] = [
     label: '플랫폼',
     type: 'multiSelect',
     options: [
-      '전체',
       'Android',
       'Flutter',
-      'React',
       'React Native'
     ]
   },

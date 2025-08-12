@@ -1,60 +1,8 @@
 import { Filter, filters } from '../domain/jobPosting/filters';
 import clsx from 'clsx';
 import { JobPosting } from '../domain/jobPosting/JobPosting';
-import { motion, AnimatePresence } from 'framer-motion';
-
-function FilterOptionItem({
-  filter,
-  isActive,
-  value,
-  onChange,
-  jobPostings
-}: { 
-  filter: Filter;
-  isActive: boolean;
-  value: any;
-  onChange: (value: any) => void;
-  jobPostings: JobPosting[];
-}) {
-  if (filter.key === 'platform') {
-    const optionsToShow = isActive
-      ? filter.options
-      : filter.options.filter((o) => value === o);
-
-    return (
-      <motion.div className='flex'>
-        <AnimatePresence initial={false}>
-          {optionsToShow.map((option) => (
-            <motion.button
-              key={option}
-              initial={{ width: 0, opacity: 0, marginRight: 0 }}
-              animate={{ width: 'auto', opacity: 1, marginRight: 8 }}
-              exit={{ width: 0, opacity: 0, marginRight: 0, pointerEvents: 'none' }}
-              transition={{ duration: 0.5, ease: 'easeInOut' }}
-              onClick={() => onChange(option)}
-              className={clsx(
-                'flex overflow-hidden whitespace-nowrap items-center hover:text-blue-500',
-                value === option ? 'text-blue-500' : 'text-gray-400'
-              )}>
-                <div className='text-sm mr-0.5'>
-                  {option}
-                </div>
-                <div className='text-xs'>
-                  {jobPostings.reduce((acc, j) => option === '전체' || j.platform.includes(option) ? acc + 1: acc, 0)}
-                </div>
-            </motion.button>
-          ))}
-        </AnimatePresence>
-      </motion.div>
-    );
-  }
-
-  if (filter.key === 'experienceLevel') {
-    return <></>;
-  }
-
-  return null;
-}
+import { motion } from 'framer-motion';
+import FilterOptionItem from './FilterOptionItem';
 
 function FilterItem({
   selectedKey,
@@ -65,8 +13,8 @@ function FilterItem({
 }: {
   selectedKey: Filter['key'] | undefined;
   selectKey: (key: Filter['key'] | undefined) => void;
-  selectedValue: Partial<Record<Filter['key'], any>>;
-  selectValue: (value: Partial<Record<Filter['key'], any>>) => void;
+  selectedValue: Record<Filter['key'], any>;
+  selectValue: (value: Record<Filter['key'], any>) => void;
   jobPostings: JobPosting[];
 }) {
   return (
