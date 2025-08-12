@@ -35,20 +35,24 @@ function filterJobPosting(
   value: any, 
   jobPosting: JobPosting
 ): boolean {
+  if (value === null) return true;
   switch (key) {
     case 'platform': {
-      return value === '전체' || jobPosting.platform.includes(value);
+      return jobPosting.platform === value;
     }
     default: {
-      return true;
+      const min = jobPosting.experienceLevel.min ?? 0;
+      const max = jobPosting.experienceLevel.max ?? 10;
+      return min <= value[1] && max >= value[0];
     }
   }
 }
 
 function App() {
   const [selectedFilterKey, setSelectedFilterKey] = useState<Filter['key'] | undefined>();
-  const [selectedFilterValues, setSelectedFilterValues] = useLocalStorageState<Partial<Record<Filter['key'], any>>>('selectedFilterValues', {
-    'platform': '전체'
+  const [selectedFilterValues, setSelectedFilterValues] = useLocalStorageState<Record<Filter['key'], any>>('selectedFilterValues', {
+    'platform': null,
+    'experienceLevel': null,
   });
   const [isSortOptionItemActive, setIsSortOptionItemActive] = useState<boolean>(false);
   const [selectedSortOptionKey, setSelectedSortOptionKey] = useLocalStorageState<string>('selectedSortOptionKey', 'deadline');
@@ -68,7 +72,7 @@ function App() {
   return (
     <div className='h-screen max-w-2xl mx-auto bg-white py-10'>
       <div className='text-2xl font-semibold mb-10'>채용 공고</div>
-      <div className='flex mb-10'>
+      <div className='flex mb-10 whitespace-nowrap overflow-hidden'>
         <AnimatePresence initial={false}>
           {!isSortOptionItemActive && (
             <FilterItem
