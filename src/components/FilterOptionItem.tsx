@@ -7,13 +7,13 @@ import { Slider } from './Slider';
 
 function PlatformItem({
   filter,
-  isActive,
+  selectedKey,
   value,
   onChange,
   jobPostings
 }: { 
   filter: PlatformFilter;
-  isActive: boolean;
+  selectedKey: Filter['key'] | undefined;
   value: any;
   onChange: (value: any) => void;
   jobPostings: JobPosting[];
@@ -29,10 +29,11 @@ function PlatformItem({
   }, [jobPostings, filter.options]);
 
   const optionsToShow = useMemo<string[]>(() => {
+    const isActive = selectedKey == 'platform';
     return isActive
       ? filter.options
       : filter.options.filter((o) => value === o);
-  }, [isActive, filter.options, value]);
+  }, [selectedKey, filter.options, value]);
   
   return (
     <div className='flex items-end'>
@@ -63,41 +64,37 @@ function PlatformItem({
 }
 
 function ExperienceLevelItem({
-  filter,
-  isActive,
-  setIsActive,
+  selectedKey,
+  selectKey,
   value,
-  onChange,
-  jobPostings
+  onChange
 }: { 
-  filter: ExperienceLevelFilter;
-  isActive: boolean;
-  setIsActive: (isActive: boolean) => void,
+  selectedKey: Filter['key'] | undefined;
+  selectKey: (key: Filter['key'] | undefined) => void;
   value: any;
   onChange: (value: any) => void;
-  jobPostings: JobPosting[];
 }) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const startTimer: (timeout: number) => void = ( timeout ) => {
-    setIsActive(true);
+    selectKey('experienceLevel');
     if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => setIsActive(false), timeout);
+    timerRef.current = setTimeout(() => {
+      selectKey(undefined);
+    }, timeout);
   };
 
   useEffect(() => {
-    if (filter.key == 'experienceLevel') {
-      if (value !== null && isActive) {
-        startTimer(3000);
-      } else {
-        setIsActive(false);
-      }
+    if (value !== null && selectedKey === 'experienceLevel') {
+      startTimer(3000);
+    } else {
+      if (timerRef.current) clearTimeout(timerRef.current);
     }
     
     return () => { 
       if (timerRef.current) clearTimeout(timerRef.current);
     }
-  }, [filter, value, isActive]);
+  }, [value !== null && selectedKey === 'experienceLevel']);
 
   return (
     <div className='flex'>
@@ -115,7 +112,7 @@ function ExperienceLevelItem({
             {`${value[0]}~${value[1]}년`}
           </motion.button>
         )}
-        {value !== null && isActive && (
+        {value !== null && selectedKey === 'experienceLevel' && (
           <motion.div
             key='experienceLevel slider'
             initial={{ width: 0, opacity: 0 }}
@@ -144,15 +141,15 @@ function ExperienceLevelItem({
 
 function FilterOptionItem({
   filter,
-  isActive,
-  setIsActive,
+  selectedKey,
+  selectKey,
   value,
   onChange,
   jobPostings
 }: { 
   filter: Filter;
-  isActive: boolean;
-  setIsActive: (isActive: boolean) => void,
+  selectedKey: Filter['key'] | undefined;
+  selectKey: (key: Filter['key'] | undefined) => void;
   value: any;
   onChange: (value: any) => void;
   jobPostings: JobPosting[];
@@ -162,7 +159,7 @@ function FilterOptionItem({
       return (
         <PlatformItem
           filter={filter}
-          isActive={isActive}
+          selectedKey={selectedKey}
           value={value}
           onChange={onChange}
           jobPostings={jobPostings}
@@ -172,12 +169,10 @@ function FilterOptionItem({
     case 'experienceLevel': {
       return (
         <ExperienceLevelItem
-          filter={filter}
-          isActive={isActive}
-          setIsActive={setIsActive}
+          selectedKey={selectedKey}
+          selectKey={selectKey}
           value={value}
           onChange={onChange}
-          jobPostings={jobPostings}
         />
       );
     }

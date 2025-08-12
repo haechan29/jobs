@@ -45,9 +45,9 @@ function FilterItem({
                   break;
                 }
                 case 'experienceLevel': {
-                  const newValue = wasSelected ? null : [0, 10];
-                  selectKey(wasSelected ? undefined : filter.key);
-                  selectValue({ ...selectedValue, [filter.key]: newValue });
+                  if (wasSelected) selectKey(undefined);
+                  else if (!wasApplied) selectKey(filter.key);
+                  selectValue({ ...selectedValue, [filter.key]: !wasApplied && !wasSelected ? [0, 10] : null });
                   break;
                 }
               }
@@ -62,8 +62,8 @@ function FilterItem({
           </button>
           <FilterOptionItem
             filter={filter}
-            isActive={selectedKey === filter.key}
-            setIsActive={(isActive) => selectKey(isActive ? filter.key : undefined)}
+            selectedKey={selectedKey}
+            selectKey={selectKey}
             value={selectedValue[filter.key]}
             onChange={(value) => {
               switch (filter.key) {
