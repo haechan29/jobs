@@ -1,6 +1,6 @@
 <div align="center">
   <h2>Jobs</h2>
-  채용공고 사이트<br/><br/>
+  채용공고 사이트 <a href="https://jobs-all.vercel.app/">📎</a> <br/><br/>
   <img width="600" src="https://github.com/user-attachments/assets/3e7af47d-10f4-4df2-b9e6-a8946d3ce134" /><br/><br/>
   ✅️ <strong>나의 역량 확인하고 기록해두기</strong><br/><br/>
   ✅️ <strong>원하는 / 필요한 채용 공고부터</strong><br/><br/>
