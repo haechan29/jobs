@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { JobPosting } from '../domain/jobPosting/JobPosting';
 import { motion } from 'framer-motion';
 import FilterOptionItem from './FilterOptionItem';
+import { JobPostingItemProps } from 'props/JobPostingItemProps';
 
 function FilterItem({
   selectedKey,
@@ -15,7 +16,7 @@ function FilterItem({
   selectKey: (key: Filter['key'] | undefined) => void;
   selectedValue: Record<Filter['key'], any>;
   selectValue: (value: Record<Filter['key'], any>) => void;
-  jobPostings: JobPosting[];
+  jobPostings: JobPostingItemProps[];
 }) {
   return (
     <motion.div

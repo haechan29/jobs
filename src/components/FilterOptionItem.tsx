@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import clsx from 'clsx';
 import { Slider } from './Slider';
+import { JobPostingItemProps } from 'props/JobPostingItemProps';
 
 function PlatformItem({
   filter,
@@ -16,7 +17,7 @@ function PlatformItem({
   selectedKey: Filter['key'] | undefined;
   value: any;
   onChange: (value: any) => void;
-  jobPostings: JobPosting[];
+  jobPostings: JobPostingItemProps[];
 }) {
   const countsByOption = useMemo<Map<string, number>>(() => {
     const counts = new Map<string, number>();
@@ -152,7 +153,7 @@ function FilterOptionItem({
   selectKey: (key: Filter['key'] | undefined) => void;
   value: any;
   onChange: (value: any) => void;
-  jobPostings: JobPosting[];
+  jobPostings: JobPostingItemProps[];
 }) {
   switch (filter.key) {
     case 'platform': {

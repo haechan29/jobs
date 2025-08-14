@@ -1,7 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import './App.css';
 import JobPostingItem from './components/JobPostingItem';
-import { jobPostingDtos } from './data/JobPostings';
 import { toJobPosting } from './domain/jobPosting/mapper';
 import { Filter } from './domain/jobPosting/filters';
 import FilterItem from './components/FilterItem';
@@ -9,6 +8,8 @@ import { JobPosting } from './domain/jobPosting/JobPosting';
 import SortOptionItem from './components/SortOptionItem';
 import useLocalStorageState from './hooks/useLocalStorageState';
 import { AnimatePresence } from 'framer-motion';
+import { JobPostingDto } from 'types/JobPostingDto';
+import { JobPostingItemProps } from 'props/JobPostingItemProps';
 
 function sortJobPosting(
   key: string,
@@ -56,9 +57,23 @@ function App() {
   });
   const [isSortOptionItemActive, setIsSortOptionItemActive] = useState<boolean>(false);
   const [selectedSortOptionKey, setSelectedSortOptionKey] = useLocalStorageState<string>('selectedSortOptionKey', 'deadline');
-  const [jobPostings, _] = useState(() => [...jobPostingDtos].map((dto) => toJobPosting(dto)))
+  const [jobPostings, setJobPostings] = useState<JobPosting[] | null>(null);
 
-  const jobPostingItemProps = useMemo(() => {
+  useEffect(() => {
+    const fetchJobPostings = async () => {
+      try {
+        const raw = await fetch('/data/jobPostings.json');
+        const dtos = (await raw.json()) as JobPostingDto[];
+        setJobPostings(dtos.map(toJobPosting));
+      } catch(error) {
+        console.log(error);
+      }
+    };
+    fetchJobPostings();
+  }, []);
+
+  const jobPostingItemProps = useMemo<JobPostingItemProps[] | null >(() => {
+    if (jobPostings === null) return null;
     return [...jobPostings]
       .filter((jobPosting) => {
         return Object.entries(selectedFilterValues).every(([key, value]) => {
@@ -69,47 +84,49 @@ function App() {
       .map((jobPosting) => jobPosting.toProps())
   }, [jobPostings, selectedFilterValues, selectedSortOptionKey]);
 
-  return (
-    <div className='h-screen max-w-2xl mx-auto bg-white py-10'>
-      <div className='text-2xl font-semibold mb-10'>채용 공고</div>
-      <div className='flex mb-10 whitespace-nowrap overflow-hidden'>
-        <AnimatePresence initial={false}>
-          {!isSortOptionItemActive && (
-            <FilterItem
-              selectedKey={selectedFilterKey}
-              selectKey={setSelectedFilterKey}
-              selectedValue={selectedFilterValues}
-              selectValue={setSelectedFilterValues}
-              jobPostings={jobPostings}
-            />
-          )}
-        </AnimatePresence>
-        <div className='flex flex-1' />
-        <AnimatePresence initial={false}>
-          {selectedFilterKey === undefined && (
-            <SortOptionItem
-              selectedKey={selectedSortOptionKey}
-              selectKey={setSelectedSortOptionKey}
-              isActive={isSortOptionItemActive}
-              setIsActive={setIsSortOptionItemActive}
-            />
-          )}
-        </AnimatePresence>
-      </div>
+  return jobPostingItemProps === null
+    ? (<></>) 
+    : (
+      <div className='h-screen max-w-2xl mx-auto bg-white py-10'>
+        <div className='text-2xl font-semibold mb-10'>채용 공고</div>
+        <div className='flex mb-10 whitespace-nowrap overflow-hidden'>
+          <AnimatePresence initial={false}>
+            {!isSortOptionItemActive && (
+              <FilterItem
+                selectedKey={selectedFilterKey}
+                selectKey={setSelectedFilterKey}
+                selectedValue={selectedFilterValues}
+                selectValue={setSelectedFilterValues}
+                jobPostings={jobPostingItemProps}
+              />
+            )}
+          </AnimatePresence>
+          <div className='flex flex-1' />
+          <AnimatePresence initial={false}>
+            {selectedFilterKey === undefined && (
+              <SortOptionItem
+                selectedKey={selectedSortOptionKey}
+                selectKey={setSelectedSortOptionKey}
+                isActive={isSortOptionItemActive}
+                setIsActive={setIsSortOptionItemActive}
+              />
+            )}
+          </AnimatePresence>
+        </div>
 
-      <div className='flex flex-col'>
-        {jobPostingItemProps
-          .map((prop, idx) => (
-            <React.Fragment key={prop.company}>
-              <JobPostingItem {...prop}/>
-              {idx !== jobPostingDtos.length - 1 && (
-                <div className='h-0.5 bg-gray-100 mb-8'/>
-              )}
-            </React.Fragment>
-          ))}
+        <div className='flex flex-col'>
+          {jobPostingItemProps
+            .map((prop, idx) => (
+              <React.Fragment key={prop.company}>
+                <JobPostingItem {...prop}/>
+                {idx !== jobPostingItemProps.length - 1 && (
+                  <div className='h-0.5 bg-gray-100 mb-8'/>
+                )}
+              </React.Fragment>
+            ))}
+        </div>
       </div>
-    </div>
-  );
+    );
 }
 
 export default App;
